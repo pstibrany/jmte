@@ -25,18 +25,20 @@ public class IfCmpToken extends IfToken {
 	@Override
 	public String getText() {
 		if (text == null) {
-			text = String
-					.format(IF + " %s='%s'", getExpression(), getOperand());
+			text = String.format("%s %s='%s'", IF, getExpression(), getOperand());
 		}
 		return text;
 	}
 
 	@Override
 	public Object evaluate(TemplateContext context) {
-		final Object value = evaluatePlain(context);
-		final boolean condition = getOperand().equals(value.toString());
-		final Object evaluated = negated ? !condition : condition;
-		return evaluated;
+		Object value = evaluatePlain(context);
+        if (value == null) {
+            return false;
+        }
+
+		boolean condition = getOperand().equals(value.toString());
+		return negated ? !condition : condition;
 	}
 
 }
