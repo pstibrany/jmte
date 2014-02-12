@@ -106,11 +106,11 @@ public class TemplateContext {
 	}
 
 	public <C> Renderer<C> resolveRendererForClass(Class<C> clazz) {
-		return engine.resolveRendererForClass(clazz);
+		return engine.getRendererRegistry().resolveRendererForClass(clazz);
 	}
 
 	public NamedRenderer resolveNamedRenderer(String rendererName) {
-		return engine.resolveNamedRenderer(rendererName);
+		return engine.getRendererRegistry().resolveNamedRenderer(rendererName);
 	}
 	
 	public Encoder getEncoder() {

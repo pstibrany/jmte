@@ -3,11 +3,11 @@ package com.floreysoft.jmte;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.floreysoft.jmte.encoder.Encoder;
 import com.floreysoft.jmte.message.DefaultErrorHandler;
@@ -20,11 +20,9 @@ import com.floreysoft.jmte.template.DynamicBytecodeCompiler;
 import com.floreysoft.jmte.template.InterpretedTemplate;
 import com.floreysoft.jmte.template.Template;
 import com.floreysoft.jmte.template.TemplateCompiler;
-import com.floreysoft.jmte.token.ExpressionToken;
 import com.floreysoft.jmte.token.IfToken;
 import com.floreysoft.jmte.token.Token;
 import com.floreysoft.jmte.util.Tool;
-import com.floreysoft.jmte.util.Util;
 
 /**
  * <p>
@@ -77,11 +75,11 @@ import com.floreysoft.jmte.util.Util;
  * @see ModelAdaptor
  * @see ProcessListener
  */
-public final class Engine implements RendererRegistry {
+public final class Engine {
 
 	public final static String VERSION = "@version@";
 
-	public static Engine createCachingEngine() {
+    public static Engine createCachingEngine() {
 		Engine engine = new Engine();
 		engine.setEnabledInterpretedTemplateCache(true);
 		return engine;
@@ -122,13 +120,9 @@ public final class Engine implements RendererRegistry {
 	// interpreted templates cache lives as long as this engine
 	private final Map<String, Template> interpretedTemplates = new HashMap<String, Template>();
 
-	private final Map<Class<?>, Renderer<?>> renderers = new HashMap<Class<?>, Renderer<?>>();
-	private final Map<Class<?>, Renderer<?>> resolvedRendererCache = new HashMap<Class<?>, Renderer<?>>();
+    private final RendererRegistry renderers = new RendererRegistry();
 
 	private final Map<String, AnnotationProcessor<?>> annotationProcessors = new HashMap<String, AnnotationProcessor<?>>();
-
-	private final Map<String, NamedRenderer> namedRenderers = new HashMap<String, NamedRenderer>();
-	private final Map<Class<?>, Set<NamedRenderer>> namedRenderersForClass = new HashMap<Class<?>, Set<NamedRenderer>>();
 
 	/**
 	 * Creates a new engine having <code>${</code> and <code>}</code> as start
@@ -139,10 +133,10 @@ public final class Engine implements RendererRegistry {
 	}
 
 	private void init() {
-		registerRenderer(Object.class, new DefaultObjectRenderer());
-		registerRenderer(Map.class, new DefaultMapRenderer());
-		registerRenderer(Collection.class, new DefaultCollectionRenderer());
-		registerRenderer(Iterable.class, new DefaultIterableRenderer());
+		renderers.registerRenderer(Object.class, new DefaultObjectRenderer());
+        renderers.registerRenderer(Map.class, new DefaultMapRenderer());
+        renderers.registerRenderer(Collection.class, new DefaultCollectionRenderer());
+        renderers.registerRenderer(Iterable.class, new DefaultIterableRenderer());
 	}
 
 	/**
@@ -224,7 +218,7 @@ public final class Engine implements RendererRegistry {
 	}
 
 	/**
-	 * Replacement for {@link java.lang.String.format}. All arguments will be
+	 * Replacement for {@link java.lang.String#format}. All arguments will be
 	 * put into the model having their index starting from 1 as their name.
 	 * 
 	 * @param pattern
@@ -257,61 +251,6 @@ public final class Engine implements RendererRegistry {
 		return templateImpl.getUsedVariables();
 	}
 
-	@Override
-	public synchronized Engine registerNamedRenderer(NamedRenderer renderer) {
-		namedRenderers.put(renderer.getName(), renderer);
-		Set<Class<?>> supportedClasses = Util.asSet(renderer.getSupportedClasses());
-		for (Class<?> clazz : supportedClasses) {
-			Class<?> classInHierarchy = clazz;
-			while (classInHierarchy != null) {
-				addSupportedRenderer(classInHierarchy, renderer);
-				classInHierarchy = classInHierarchy.getSuperclass();
-			}
-		}
-		return this;
-	}
-
-	@Override
-	public synchronized Engine deregisterNamedRenderer(NamedRenderer renderer) {
-		namedRenderers.remove(renderer.getName());
-		Set<Class<?>> supportedClasses = Util.asSet(renderer.getSupportedClasses());
-		for (Class<?> clazz : supportedClasses) {
-			Class<?> classInHierarchy = clazz;
-			while (classInHierarchy != null) {
-				Set<NamedRenderer> renderers = namedRenderersForClass.get(classInHierarchy);
-				renderers.remove(renderer);
-				classInHierarchy = classInHierarchy.getSuperclass();
-			}
-		}
-		return this;
-	}
-
-	private void addSupportedRenderer(Class<?> clazz, NamedRenderer renderer) {
-		Collection<NamedRenderer> compatibleRenderers = getCompatibleRenderers(clazz);
-		compatibleRenderers.add(renderer);
-	}
-
-	@Override
-	public synchronized Collection<NamedRenderer> getCompatibleRenderers(Class<?> inputType) {
-		Set<NamedRenderer> renderers = namedRenderersForClass.get(inputType);
-		if (renderers == null) {
-			renderers = new HashSet<NamedRenderer>();
-			namedRenderersForClass.put(inputType, renderers);
-		}
-		return renderers;
-	}
-
-	@Override
-	public synchronized Collection<NamedRenderer> getAllNamedRenderers() {
-		Collection<NamedRenderer> values = namedRenderers.values();
-		return values;
-	}
-
-	@Override
-	public NamedRenderer resolveNamedRenderer(String rendererName) {
-		return namedRenderers.get(rendererName);
-	}
-
 	public synchronized Engine registerAnnotationProcessor(AnnotationProcessor<?> annotationProcessor) {
 		annotationProcessors.put(annotationProcessor.getType(), annotationProcessor);
 		return this;
@@ -324,50 +263,6 @@ public final class Engine implements RendererRegistry {
 
 	AnnotationProcessor<?> resolveAnnotationProcessor(String type) {
 		return annotationProcessors.get(type);
-	}
-
-	@Override
-	public synchronized <C> Engine registerRenderer(Class<C> clazz, Renderer<C> renderer) {
-		renderers.put(clazz, renderer);
-		resolvedRendererCache.clear();
-		return this;
-	}
-
-	@Override
-	public synchronized Engine deregisterRenderer(Class<?> clazz) {
-		renderers.remove(clazz);
-		resolvedRendererCache.clear();
-		return this;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public <C> Renderer<C> resolveRendererForClass(Class<C> clazz) {
-		Renderer resolvedRenderer = resolvedRendererCache.get(clazz);
-		if (resolvedRenderer != null) {
-			return resolvedRenderer;
-		}
-
-		resolvedRenderer = renderers.get(clazz);
-		if (resolvedRenderer == null) {
-			Class<?>[] interfaces = clazz.getInterfaces();
-			for (Class<?> interfaze : interfaces) {
-				resolvedRenderer = resolveRendererForClass(interfaze);
-				if (resolvedRenderer != null) {
-					break;
-				}
-			}
-		}
-		if (resolvedRenderer == null) {
-			Class<?> superclass = clazz.getSuperclass();
-			if (superclass != null) {
-				resolvedRenderer = resolveRendererForClass(superclass);
-			}
-		}
-		if (resolvedRenderer != null) {
-			resolvedRendererCache.put(clazz, resolvedRenderer);
-		}
-		return resolvedRenderer;
 	}
 
 	public synchronized void setEncoder(Encoder encoder) {
@@ -484,4 +379,8 @@ public final class Engine implements RendererRegistry {
 	public TemplateCompiler getCompiler() {
 		return compiler;
 	}
+
+    public RendererRegistry getRendererRegistry() {
+        return renderers;
+    }
 }

@@ -102,7 +102,7 @@ public class InterpretedEngineTest extends AbstractEngineTest {
 
 	@Test
 	public void namedRendererRegistry() throws Exception {
-		NamedRenderer stringRenderer = ENGINE_WITH_NAMED_RENDERERS
+		NamedRenderer stringRenderer = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.resolveNamedRenderer("string");
 		assertNotNull(stringRenderer);
 		RenderFormatInfo formatInfo = stringRenderer.getFormatInfo();
@@ -111,23 +111,23 @@ public class InterpretedEngineTest extends AbstractEngineTest {
 		assertArrayEquals(new String[] { "uppercase", "" }, optionRenderInfo
 				.getOptions());
 
-		NamedRenderer dateRenderer = ENGINE_WITH_NAMED_RENDERERS
+		NamedRenderer dateRenderer = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.resolveNamedRenderer("date");
 		assertNotNull(dateRenderer);
 
-		Collection<NamedRenderer> allNamedRenderers = ENGINE_WITH_NAMED_RENDERERS
+		Collection<NamedRenderer> allNamedRenderers = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.getAllNamedRenderers();
 		assertEquals(2, allNamedRenderers.size());
 
-		Collection<NamedRenderer> compatibleRenderers2 = ENGINE_WITH_NAMED_RENDERERS
+		Collection<NamedRenderer> compatibleRenderers2 = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.getCompatibleRenderers(Long.class);
 		assertEquals(1, compatibleRenderers2.size());
 
-		Collection<NamedRenderer> compatibleRenderers1 = ENGINE_WITH_NAMED_RENDERERS
+		Collection<NamedRenderer> compatibleRenderers1 = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.getCompatibleRenderers(Number.class);
 		assertEquals(2, compatibleRenderers1.size());
 
-		Collection<NamedRenderer> compatibleRenderers3 = ENGINE_WITH_NAMED_RENDERERS
+		Collection<NamedRenderer> compatibleRenderers3 = ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry()
 				.getCompatibleRenderers(Boolean.class);
 		assertEquals(0, compatibleRenderers3.size());
 

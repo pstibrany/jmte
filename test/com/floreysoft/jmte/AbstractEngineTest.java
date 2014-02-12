@@ -95,24 +95,32 @@ public abstract class AbstractEngineTest {
 		};
 	}
 
-	final Engine ENGINE_WITH_CUSTOM_RENDERERS = newEngine().registerRenderer(
-			Object.class, new Renderer<Object>() {
+	final Engine ENGINE_WITH_CUSTOM_RENDERERS;
+    {
+        ENGINE_WITH_CUSTOM_RENDERERS = newEngine();
+        ENGINE_WITH_CUSTOM_RENDERERS.getRendererRegistry().registerRenderer(
+                Object.class, new Renderer<Object>() {
 
-				@Override
-				public String render(Object o, Locale locale) {
-					return "Object=" + o.toString();
-				}
-			}).registerRenderer(MyBean.class, new Renderer<MyBean>() {
+            @Override
+            public String render(Object o, Locale locale) {
+                return "Object=" + o.toString();
+            }
+        });
+        ENGINE_WITH_CUSTOM_RENDERERS.getRendererRegistry().registerRenderer(MyBean.class, new Renderer<MyBean>() {
 
-		@Override
-		public String render(MyBean o, Locale locale) {
-			return "Render=" + o.property1.toString();
-		}
+            @Override
+            public String render(MyBean o, Locale locale) {
+                return "Render=" + o.property1.toString();
+            }
 
-	});
-	final Engine ENGINE_WITH_NAMED_RENDERERS = ENGINE_WITH_CUSTOM_RENDERERS
-			.registerNamedRenderer(new NamedDateRenderer())
-			.registerNamedRenderer(new NamedStringRenderer());
+        });
+    }
+	final Engine ENGINE_WITH_NAMED_RENDERERS;
+    {
+        ENGINE_WITH_NAMED_RENDERERS = ENGINE_WITH_CUSTOM_RENDERERS;
+        ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry().registerNamedRenderer(new NamedDateRenderer());
+        ENGINE_WITH_NAMED_RENDERERS.getRendererRegistry().registerNamedRenderer(new NamedStringRenderer());
+    }
 
 	private static final MyBean MyBean1 = new MyBean("1.1", "1.2");
 	private static final MyBean MyBean2 = new MyBean("2.1", "2.2");
@@ -1276,7 +1284,7 @@ public abstract class AbstractEngineTest {
 	public void xmlEncoderRawRenderer() throws Exception {
 		Renderer<String> rawRenderer = new RawNoopRenderer();
 		Engine engine = newEngine();
-		engine.registerRenderer(String.class, rawRenderer);
+		engine.getRendererRegistry().registerRenderer(String.class, rawRenderer);
 		engine.setEncoder(new XMLEncoder());
 
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -1290,7 +1298,7 @@ public abstract class AbstractEngineTest {
 	public void xmlEncoderRawNamedRenderer() throws Exception {
 		NamedRenderer rawRenderer = new RawNamedNoopRenderer();
 		Engine engine = newEngine();
-		engine.registerNamedRenderer(rawRenderer);
+		engine.getRendererRegistry().registerNamedRenderer(rawRenderer);
 		engine.setEncoder(new XMLEncoder());
 
 		Map<String, Object> model = new HashMap<String, Object>();

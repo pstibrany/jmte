@@ -66,8 +66,8 @@ public class RealLiveTest {
 	}
 
 	public String shop(Engine engine) {
-		engine.registerRenderer(Date.class, new DateRenderer());
-		engine.registerNamedRenderer(new CurrencyRenderer());
+		engine.getRendererRegistry().registerRenderer(Date.class, new DateRenderer());
+		engine.getRendererRegistry().registerNamedRenderer(new CurrencyRenderer());
 		return engine.transform(template, model);
 
 	}
