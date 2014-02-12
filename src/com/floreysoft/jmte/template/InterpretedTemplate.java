@@ -25,18 +25,29 @@ import com.floreysoft.jmte.token.StringToken;
 import com.floreysoft.jmte.token.Token;
 import com.floreysoft.jmte.token.TokenStream;
 
-public class InterpretedTemplate extends AbstractTemplate {
+public class InterpretedTemplate implements Template {
 
-	protected final TokenStream tokenStream;
-	protected transient StringBuilder output;
+    public static final String SPECIAL_ITERATOR_VARIABLE = "_it";
+    public static final String ODD_PREFIX = "odd_";
+    public static final String EVEN_PREFIX = "even_";
+    public static final String LAST_PREFIX = "last_";
+    public static final String FIRST_PREFIX = "first_";
+
+    protected final Engine engine;
+    protected final String template;
+    protected final String sourceName;
+
+    protected final TokenStream tokenStream;
+    protected transient StringBuilder output;
 	protected transient TemplateContext context;
+    protected Set<String> usedVariables;
 
 	public InterpretedTemplate(String template, String sourceName, Engine engine) {
-		this.template = template;
-		this.engine = engine;
-		this.sourceName = sourceName;
-		tokenStream = new TokenStream(sourceName, template, engine
-				.getExprStartToken(), engine.getExprEndToken());
+        this.template = template;
+        this.sourceName = sourceName;
+        this.engine = engine;
+
+        tokenStream = new TokenStream(sourceName, template, engine.getExprStartToken(), engine.getExprEndToken());
 		tokenStream.prefill();
 	}
 
@@ -88,7 +99,17 @@ public class InterpretedTemplate extends AbstractTemplate {
 		return usedVariables;
 	}
 
-	@Override
+    /**
+         * Transforms a template into an expanded output using the given model.
+         *
+         * @param model
+         *            the model used to evaluate expressions inside the template
+         * @param modelAdaptor
+         *            adaptor used for this transformation to look up values from
+         *            model
+         * @return the expanded output
+         */
+    @Override
 	public synchronized String transform(Map<String, Object> model, Locale locale,
 			ModelAdaptor modelAdaptor, ProcessListener processListener) {
 		try {
@@ -301,4 +322,28 @@ public class InterpretedTemplate extends AbstractTemplate {
 	public String toString() {
 		return template;
 	}
+
+    protected void addSpecialVariables(ForEachToken feToken, Map<String, Object> model) {
+		String suffix = feToken.getVarName();
+		addSpecialVariables(feToken, model, suffix);
+
+		// special _it variable as an alias for run variable in inner loop
+		model.put(SPECIAL_ITERATOR_VARIABLE, model.get(feToken.getVarName()));
+		addSpecialVariables(feToken, model, SPECIAL_ITERATOR_VARIABLE);
+	}
+
+    private void addSpecialVariables(ForEachToken feToken, Map<String, Object> model, String suffix) {
+        model.put(FIRST_PREFIX + suffix, feToken.isFirst());
+        model.put(LAST_PREFIX + suffix, feToken.isLast());
+        model.put(EVEN_PREFIX + suffix, feToken.getIndex() % 2 == 0);
+        model.put(ODD_PREFIX + suffix, feToken.getIndex() % 2 == 1);
+    }
+
+    public String transform(Map<String, Object> model, Locale locale, ProcessListener processListener) {
+        return transform(model, locale, engine.getModelAdaptor(), processListener);
+    }
+
+    public String transform(Map<String, Object> model, Locale locale) {
+        return transform(model, locale, engine.getModelAdaptor(), null);
+    }
 }

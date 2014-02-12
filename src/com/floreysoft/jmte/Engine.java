@@ -98,7 +98,6 @@ public final class Engine {
 	private String exprEndToken = "}";
 	private double expansionSizeFactor = 2;
 	private ErrorHandler errorHandler = new DefaultErrorHandler();
-	private boolean useCompilation = false;
 	private boolean enabledInterpretedTemplateCache = true;
 	private ModelAdaptor modelAdaptor = new DefaultModelAdaptor();
 	private Encoder encoder = null;
@@ -289,14 +288,6 @@ public final class Engine {
 
 	public synchronized double getExpansionSizeFactor() {
 		return expansionSizeFactor;
-	}
-
-	public synchronized boolean isUseCompilation() {
-		return useCompilation;
-	}
-
-	public synchronized void setUseCompilation(boolean useCompilation) {
-		this.useCompilation = useCompilation;
 	}
 
 	public synchronized void setModelAdaptor(ModelAdaptor modelAdaptor) {
