@@ -55,14 +55,6 @@ import com.floreysoft.jmte.util.Tool;
  * model. <br>
  * 
  * <p>
- * Use {@link #setUseCompilation(boolean)} to switch on compilation mode. This
- * will compile the template into Java byte code before execution. Especially
- * when the template is used often this will speed up the execution by a factor
- * between 2 and 10. However, each compiled template results in a new class
- * definition and a new globally cached singleton instance of it.
- * </p>
- * 
- * <p>
  * This class is thread safe.
  * </p>
  * 
