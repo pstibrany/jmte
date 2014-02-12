@@ -115,10 +115,10 @@ public final class Engine {
 	private TemplateCompiler compiler = new DynamicBytecodeCompiler();
 
 	// compiled templates cache lives as long as this engine
-	private final Map<String, Template> compiledTemplates = new HashMap<String, Template>();
+	private final Map<String, Template> compiledTemplates = new ConcurrentHashMap<String, Template>();
 
 	// interpreted templates cache lives as long as this engine
-	private final Map<String, Template> interpretedTemplates = new HashMap<String, Template>();
+	private final Map<String, Template> interpretedTemplates = new ConcurrentHashMap<String, Template>();
 
     private final RendererRegistry renderers = new RendererRegistry();
 
