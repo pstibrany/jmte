@@ -2,6 +2,7 @@ package com.floreysoft.jmte.token;
 
 import java.util.List;
 
+import com.floreysoft.jmte.ModelBuilder;
 import com.floreysoft.jmte.NamedRenderer;
 import com.floreysoft.jmte.Renderer;
 import com.floreysoft.jmte.TemplateContext;
@@ -100,7 +101,8 @@ public class StringToken extends ExpressionToken {
 					}
 					renderedResult = rendererForClass.render(value, context.locale);
 				} else {
-					renderedResult = value.toString();
+                    context.errorHandler.error("no-renderer-for-class", this, new ModelBuilder("clazz", value.getClass().getName()).build());
+                    renderedResult = null;
 				}
 			}
 		}
