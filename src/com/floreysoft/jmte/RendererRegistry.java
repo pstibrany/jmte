@@ -73,6 +73,11 @@ public class RendererRegistry {
         resolvedRendererCache.clear();
     }
 
+    public synchronized void deregisterAllRenderers() {
+        renderers.clear();
+        resolvedRendererCache.clear();
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized <C> Renderer<C> resolveRendererForClass(Class<C> clazz) {
         Renderer resolvedRenderer = resolvedRendererCache.get(clazz);
