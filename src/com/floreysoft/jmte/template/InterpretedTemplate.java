@@ -39,7 +39,6 @@ public class InterpretedTemplate implements Template {
     protected final String sourceName;
 
     protected final List<Token> tokens;
-    protected transient StringBuilder output;
     protected Set<String> usedVariables;
 
 	public InterpretedTemplate(String template, String sourceName, Engine engine) {
@@ -59,7 +58,7 @@ public class InterpretedTemplate implements Template {
 
 		this.usedVariables = new TreeSet<String>();
 		final Engine engine = new Engine();
-		final ScopedMap scopedMap = new ScopedMap(Collections.EMPTY_MAP);
+		final ScopedMap scopedMap = new ScopedMap(Collections.<String, Object>emptyMap());
 
 		ProcessListener processListener = new ProcessListener() {
 
@@ -113,31 +112,26 @@ public class InterpretedTemplate implements Template {
     @Override
 	public synchronized String transform(Map<String, Object> model, Locale locale,
 			ModelAdaptor modelAdaptor, ProcessListener processListener) {
-		try {
-			TemplateContext context = new TemplateContext(template, locale, sourceName, new ScopedMap(
-					model), modelAdaptor, engine, engine.getErrorHandler(), processListener);
 
-            TokenStream tokenStream = new TokenStream(tokens);
+        TemplateContext context = new TemplateContext(template, locale, sourceName, new ScopedMap(
+                model), modelAdaptor, engine, engine.getErrorHandler(), processListener);
 
-            return transformPure(tokenStream, context);
-		} finally {
-			output = null;
-		}
+        TokenStream tokenStream = new TokenStream(tokens);
+
+        return transformPure(tokenStream, context);
 	}
 
 	protected String transformPure(TokenStream tokenStream, TemplateContext context) {
-		output = new StringBuilder(
-				(int) (context.template.length() * context.engine
-						.getExpansionSizeFactor()));
+        StringBuilder output = new StringBuilder((int) (context.template.length() * context.engine.getExpansionSizeFactor()));
 		tokenStream.nextToken();
 		while (tokenStream.currentToken() != null) {
-			content(context, tokenStream, false);
+			content(context, tokenStream, false, output);
 		}
 		return output.toString();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void foreach(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip) {
+	private void foreach(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip, StringBuilder output) {
 		ForEachToken feToken = (ForEachToken) tokenStream.currentToken();
 		Iterable iterable = (Iterable) feToken.evaluate(context);
 		feToken.setIterator(iterable.iterator());
@@ -153,7 +147,7 @@ public class InterpretedTemplate implements Template {
 				Token contentToken;
 				while ((contentToken = tokenStream.currentToken()) != null
 						&& !(contentToken instanceof EndToken)) {
-					content(context, tokenStream, true);
+					content(context, tokenStream, true, output);
 				}
 				if (contentToken == null) {
 					engine.getErrorHandler().error("missing-end", feToken);
@@ -174,7 +168,7 @@ public class InterpretedTemplate implements Template {
 					Token contentToken;
 					while ((contentToken = tokenStream.currentToken()) != null
 							&& !(contentToken instanceof EndToken)) {
-						content(context, tokenStream, false);
+						content(context, tokenStream, false, output);
 					}
 					if (contentToken == null) {
 						engine.getErrorHandler().error("missing-end", feToken);
@@ -194,7 +188,7 @@ public class InterpretedTemplate implements Template {
 		}
 	}
 	
-	private boolean elseIfCondition(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip) {
+	private boolean elseIfCondition(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip, StringBuilder output) {
 		ElseIfToken elseIfToken = (ElseIfToken) tokenStream.currentToken();
 		tokenStream.consume();
 		
@@ -213,7 +207,7 @@ public class InterpretedTemplate implements Template {
 					&& !(contentToken instanceof EndToken)
 					&& !(contentToken instanceof ElseToken)
 					&& !(contentToken instanceof ElseIfToken)) {
-				content(context, tokenStream, localSkip);
+				content(context, tokenStream, localSkip, output);
 			}
 		} finally {
 			context.pop();
@@ -222,7 +216,7 @@ public class InterpretedTemplate implements Template {
 		return localSkip;
 	}
 
-	private void condition(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip) {
+	private void condition(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip, StringBuilder output) {
 		IfToken ifToken = (IfToken) tokenStream.currentToken();
 		tokenStream.consume();
 		
@@ -240,14 +234,14 @@ public class InterpretedTemplate implements Template {
 					&& !(contentToken instanceof EndToken)
 					&& !(contentToken instanceof ElseToken)
 					&& !(contentToken instanceof ElseIfToken)) {
-				content(context, tokenStream, localSkip);
+				content(context, tokenStream, localSkip, output);
 			}
 			
 			boolean elseIfSkip = !localSkip;
 			boolean inheritedElseIfSkip = elseIfSkip;
 			while ((contentToken = tokenStream.currentToken()) != null
 					&& contentToken instanceof ElseIfToken) {
-				inheritedElseIfSkip = elseIfCondition(context, tokenStream, elseIfSkip);
+				inheritedElseIfSkip = elseIfCondition(context, tokenStream, elseIfSkip, output);
 				
 				if (!inheritedElseIfSkip) {
 					elseIfSkip = true;
@@ -265,7 +259,7 @@ public class InterpretedTemplate implements Template {
 
 				while ((contentToken = tokenStream.currentToken()) != null
 						&& !(contentToken instanceof EndToken)) {
-					content(context, tokenStream, localSkip);
+					content(context, tokenStream, localSkip, output);
 				}
 
 			}
@@ -281,7 +275,7 @@ public class InterpretedTemplate implements Template {
 		}
 	}
 
-	private void content(TemplateContext context, TokenStream tokenStream, boolean skip) {
+	private void content(TemplateContext context, TokenStream tokenStream, boolean skip, StringBuilder output) {
 		Token token = tokenStream.currentToken();
 		context.notifyProcessListener(token, skip ? Action.SKIP : Action.EVAL);
 		if (token instanceof PlainTextToken) {
@@ -296,11 +290,11 @@ public class InterpretedTemplate implements Template {
 				output.append(expanded);
 			}
 		} else if (token instanceof ForEachToken) {
-			foreach(context, tokenStream, skip);
+			foreach(context, tokenStream, skip, output);
 		} else if (token instanceof ElseIfToken) {
-			elseIfCondition(context, tokenStream, skip);
+			elseIfCondition(context, tokenStream, skip, output);
 		} else if (token instanceof IfToken) {
-			condition(context, tokenStream, skip);
+			condition(context, tokenStream, skip, output);
 		} else if (token instanceof ElseToken) {
 			tokenStream.consume();
 			engine.getErrorHandler().error("else-out-of-scope", token);
