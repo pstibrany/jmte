@@ -7,28 +7,18 @@ import com.floreysoft.jmte.util.StartEndPair;
 import com.floreysoft.jmte.util.Util;
 
 public class TokenStream {
-	private final Lexer lexer = new Lexer();
-	private final String sourceName;
-	private final String input;
-	private final List<StartEndPair> scan;
-	private final String splitStart;
-	private final String splitEnd;
+	private final List<Token> tokens;
+	private int currentTokenIndex = 0;
+	private Token currentToken = null;
 
-	private transient List<Token> tokens = null;
-	private transient int currentTokenIndex = -1;
-	private transient Token currentToken = null;
-
-	public TokenStream(String sourceName, String input, String splitStart,
-			String splitEnd) {
-		this.sourceName = sourceName;
-		this.input = input;
-		this.splitStart = splitStart;
-		this.splitEnd = splitEnd;
-		this.scan = Util.scan(input, splitStart, splitEnd, true);
+	public TokenStream(List<Token> tokens) {
+        this.tokens = tokens;
 	}
 
-	private void fillTokens() {
-		this.tokens = new ArrayList<Token>();
+	public static List<Token> parseTokens(String sourceName, String input, String splitStart, String splitEnd) {
+        Lexer lexer = new Lexer();
+        List<StartEndPair> scan = Util.scan(input, splitStart, splitEnd, true);
+		List<Token> tokens = new ArrayList<Token>();
 		final char[] inputChars = input.toCharArray();
 		int offset = 0;
 		int index = 0;
@@ -64,17 +54,11 @@ public class TokenStream {
 			token.setTokenIndex(index++);
 			tokens.add(token);
 		}
-	}
 
-	private void initTokens() {
-		if (this.tokens == null) {
-			fillTokens();
-			this.currentTokenIndex = 0;
-		}
+        return tokens;
 	}
 
 	public Token nextToken() {
-		initTokens();
 		if (currentTokenIndex < tokens.size()) {
 			currentToken = tokens.get(currentTokenIndex++);
 		} else {
@@ -92,21 +76,7 @@ public class TokenStream {
 	}
 
 	public void rewind(Token tokenToRewindTo) {
-		initTokens();
 		this.currentTokenIndex = tokenToRewindTo.getTokenIndex() + 1;
 		consume();
-	}
-
-	public List<Token> getAllTokens() {
-		initTokens();
-		return this.tokens;
-	}
-
-	public void prefill() {
-		initTokens();
-	}
-
-	public void reset() {
-		currentTokenIndex = 0;		
 	}
 }
