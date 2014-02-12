@@ -99,22 +99,18 @@ public class InterpretedTemplate implements Template {
 		return usedVariables;
 	}
 
-    /**
-         * Transforms a template into an expanded output using the given model.
-         *
-         * @param model
-         *            the model used to evaluate expressions inside the template
-         * @param modelAdaptor
-         *            adaptor used for this transformation to look up values from
-         *            model
-         * @return the expanded output
-         */
-    @Override
-	public synchronized String transform(Map<String, Object> model, Locale locale,
-			ModelAdaptor modelAdaptor, ProcessListener processListener) {
+    public String transform(Map<String, Object> model, Locale locale, ProcessListener processListener) {
+        return transform(model, locale, engine.getModelAdaptor(), processListener);
+    }
 
-        TemplateContext context = new TemplateContext(template, locale, sourceName, new ScopedMap(
-                model), modelAdaptor, engine, engine.getErrorHandler(), processListener);
+    public String transform(Map<String, Object> model, Locale locale) {
+        return transform(model, locale, engine.getModelAdaptor(), null);
+    }
+
+    @Override
+	public String transform(Map<String, Object> model, Locale locale, ModelAdaptor modelAdaptor, ProcessListener processListener) {
+        TemplateContext context = new TemplateContext(template, locale, sourceName,
+                new ScopedMap(model), modelAdaptor, engine, engine.getErrorHandler(), processListener);
 
         TokenStream tokenStream = new TokenStream(tokens);
 
@@ -332,13 +328,5 @@ public class InterpretedTemplate implements Template {
         model.put(LAST_PREFIX + suffix, feToken.isLast());
         model.put(EVEN_PREFIX + suffix, feToken.getIndex() % 2 == 0);
         model.put(ODD_PREFIX + suffix, feToken.getIndex() % 2 == 1);
-    }
-
-    public String transform(Map<String, Object> model, Locale locale, ProcessListener processListener) {
-        return transform(model, locale, engine.getModelAdaptor(), processListener);
-    }
-
-    public String transform(Map<String, Object> model, Locale locale) {
-        return transform(model, locale, engine.getModelAdaptor(), null);
     }
 }
