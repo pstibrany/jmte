@@ -16,10 +16,8 @@ import com.floreysoft.jmte.renderer.DefaultCollectionRenderer;
 import com.floreysoft.jmte.renderer.DefaultIterableRenderer;
 import com.floreysoft.jmte.renderer.DefaultMapRenderer;
 import com.floreysoft.jmte.renderer.DefaultObjectRenderer;
-import com.floreysoft.jmte.template.DynamicBytecodeCompiler;
 import com.floreysoft.jmte.template.InterpretedTemplate;
 import com.floreysoft.jmte.template.Template;
-import com.floreysoft.jmte.template.TemplateCompiler;
 import com.floreysoft.jmte.token.IfToken;
 import com.floreysoft.jmte.token.Token;
 import com.floreysoft.jmte.util.Tool;
@@ -91,12 +89,6 @@ public final class Engine {
 		return engine;
 	}
 
-	public static Engine createCompilingEngine() {
-		Engine engine = new Engine();
-		engine.setUseCompilation(true);
-		return engine;
-	}
-
 	public static Engine createDefaultEngine() {
 		Engine engine = new Engine();
 		return engine;
@@ -111,14 +103,8 @@ public final class Engine {
 	private ModelAdaptor modelAdaptor = new DefaultModelAdaptor();
 	private Encoder encoder = null;
 
-	// compiler plus all compiled classes live as long as this engine
-	private TemplateCompiler compiler = new DynamicBytecodeCompiler();
-
-	// compiled templates cache lives as long as this engine
-	private final Map<String, Template> compiledTemplates = new ConcurrentHashMap<String, Template>();
-
 	// interpreted templates cache lives as long as this engine
-	private final Map<String, Template> interpretedTemplates = new ConcurrentHashMap<String, Template>();
+	private final Map<String, Template> templatesCache = new ConcurrentHashMap<String, Template>();
 
     private final RendererRegistry renderers = new RendererRegistry();
 
@@ -351,33 +337,16 @@ public final class Engine {
 	 */
 	public Template getTemplate(String template, String sourceName) {
 		Template templateImpl;
-		if (useCompilation) {
-			templateImpl = compiledTemplates.get(template);
-			if (templateImpl == null) {
-				templateImpl = compiler.compile(template, sourceName, this);
-				compiledTemplates.put(template, templateImpl);
-			}
-			return templateImpl;
-		} else {
-			if (enabledInterpretedTemplateCache) {
-				templateImpl = interpretedTemplates.get(template);
-				if (templateImpl == null) {
-					templateImpl = new InterpretedTemplate(template, sourceName, this);
-					interpretedTemplates.put(template, templateImpl);
-				}
-			} else {
-				templateImpl = new InterpretedTemplate(template, sourceName, this);
-			}
-		}
+        if (enabledInterpretedTemplateCache) {
+            templateImpl = templatesCache.get(template);
+            if (templateImpl == null) {
+                templateImpl = new InterpretedTemplate(template, sourceName, this);
+                templatesCache.put(template, templateImpl);
+            }
+        } else {
+            templateImpl = new InterpretedTemplate(template, sourceName, this);
+        }
 		return templateImpl;
-	}
-
-	public void setCompiler(TemplateCompiler compiler) {
-		this.compiler = compiler;
-	}
-
-	public TemplateCompiler getCompiler() {
-		return compiler;
 	}
 
     public RendererRegistry getRendererRegistry() {
