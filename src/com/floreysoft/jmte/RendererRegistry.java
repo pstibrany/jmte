@@ -3,12 +3,21 @@ package com.floreysoft.jmte;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import com.floreysoft.jmte.util.Util;
 
 public class RendererRegistry {
+    // marker used in resolvedRendererCache. Never returned to caller.
+    private final Renderer<?> CACHE_MISS = new Renderer<Object>() {
+        @Override
+        public String render(Object o, Locale locale) {
+            throw new UnsupportedOperationException("marker renderer, not used");
+        }
+    };
+
     private final Map<String, NamedRenderer> namedRenderers = new HashMap<String, NamedRenderer>();
     private final Map<Class<?>, Set<NamedRenderer>> namedRenderersForClass = new HashMap<Class<?>, Set<NamedRenderer>>();
 
@@ -82,6 +91,9 @@ public class RendererRegistry {
     public synchronized <C> Renderer<C> resolveRendererForClass(Class<C> clazz) {
         Renderer resolvedRenderer = resolvedRendererCache.get(clazz);
         if (resolvedRenderer != null) {
+            if (resolvedRenderer == CACHE_MISS) {
+                return null;
+            }
             return resolvedRenderer;
         }
 
@@ -103,6 +115,8 @@ public class RendererRegistry {
         }
         if (resolvedRenderer != null) {
             resolvedRendererCache.put(clazz, resolvedRenderer);
+        } else {
+            resolvedRendererCache.put(clazz, CACHE_MISS);
         }
         return resolvedRenderer;
     }
