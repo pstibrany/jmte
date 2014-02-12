@@ -55,9 +55,6 @@
     <resources>
       <resource>
         <directory>${project.basedir}/src</directory>
-	<excludes>
-		 <exclude>**/*.java</exclude>
-	</excludes>
       </resource>
     </resources>
     <testResources>
@@ -145,7 +142,7 @@
 	      </plugins>
 	    </build>
 	  </profile>
-   </profiles>  
+   </profiles>
 
   <distributionManagement>
     <repository>
