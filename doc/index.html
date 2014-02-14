@@ -113,10 +113,10 @@ ${else}
 ${end}
 </pre>
 
-<p>The else-part is optional and the whole conditional block has to
+<p>The elseif and else-part are optional and the whole conditional block has to
 be terminated by the end-expression. If-expressions can be nested and
-conditions can be negated using the "!"-operator. You can also compare
-to a string constant using the "="-operator.</p>
+conditions can be negated using the "!"-operator (example: <code>${if !condition}...{end}</code>). You can also compare
+to a string constant using the "="-operator (example: <code>${if var='string'}...{end}</code>, or <code>${if !var='string'}...{end}</code>).</p>
 <p>There are no other logical operators, i.e. you can not combine
 conditions using <code>and</code> or <code>or</code>. The reason is that
 this is a minimal language, expressions can be complex and conditions

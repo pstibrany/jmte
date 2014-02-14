@@ -43,6 +43,7 @@ public class DefaultModelAdaptor implements ModelAdaptor {
 			try {
 				value = ((Callable) value).call();
 			} catch (Exception e) {
+                context.errorHandler.error("calling-callable-failed", token, new ModelBuilder("callable", value, "exception", e).build());
 			}
 		}
 		return value;
