@@ -626,12 +626,9 @@ public abstract class AbstractEngineTest {
 	@Test
 	public void ifBooleanStringExpression() throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		String falseString = new Boolean(false).toString();
-		assertEquals("false", falseString);
-		model.put("falseString", falseString);
-		String output = newEngine().transform("${if falseString}NO${end}",
-				model);
-		assertEquals("", output);
+		model.put("falseString", "false");
+		String output = newEngine().transform("${if falseString}YES${end}", model);
+		assertEquals("YES", output);
 	}
 
 	@Test

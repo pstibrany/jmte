@@ -41,8 +41,7 @@ public class IfToken extends ExpressionToken {
 		final Object value = evaluatePlain(context);
 
 		final boolean condition;
-		if (value == null || value.toString().equals("")
-				|| value.toString().equalsIgnoreCase("false")) {
+		if (value == null || value.toString().equals("")) {
 			condition = false;
 		} else if (value instanceof Boolean) {
 			condition = (Boolean) value;
