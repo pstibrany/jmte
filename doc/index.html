@@ -106,8 +106,10 @@ template engine provides you with an if-statement to do so.</p>
 <pre>
 ${if condition}
   text displayed if condition holds
+${elseif condition2}
+  text displayed if condition2 holds
 ${else}
-  text displayed if condition does not hold
+  text displayed if condition1 and condition2 do not hold
 ${end}
 </pre>
 
@@ -125,7 +127,7 @@ and add it to the model.</p>
 <p>The condition can be any object. It evaluates using these rules
 <ul>
 	<li>if the object is <code>null</code> or calling <code>toString</code>
-	on the object returns the empty string or <code>"false"</code> the
+	on the object returns the empty string, the
 	condition evaluates to <code>false</code>
 	<li>if the object is a boolean, the condition evaluates to the
 	value of that boolean
