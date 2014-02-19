@@ -109,12 +109,4 @@ public abstract class AbstractToken implements Token {
 	public void setTokenIndex(int tokenIndex) {
 		this.tokenIndex = tokenIndex;
 	}
-	
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
 }
