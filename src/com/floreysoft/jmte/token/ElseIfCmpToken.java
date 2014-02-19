@@ -33,6 +33,10 @@ public class ElseIfCmpToken extends ElseIfToken {
 	@Override
 	public Object evaluate(TemplateContext context) {
 		final Object value = evaluatePlain(context);
+        if (value == null) {
+            return false;
+        }
+
 		final boolean condition = getOperand().equals(value.toString());
 		final Object evaluated = negated ? !condition : condition;
 		return evaluated;
