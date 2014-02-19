@@ -6,8 +6,6 @@ public class ElseIfToken extends IfToken {
 
 	public static final String ELSE_IF = "elseif";
 	
-	protected ElseIfToken elseIfToken = null;
-	
 	public ElseIfToken(List<String> segments, String expression, boolean negated) {
 		super(segments, expression, negated);
 	}
