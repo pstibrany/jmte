@@ -129,8 +129,7 @@ public class InterpretedTemplate implements Template {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void foreach(TemplateContext context, TokenStream tokenStream, boolean inheritedSkip, StringBuilder output) {
 		ForEachToken feToken = (ForEachToken) tokenStream.currentToken();
-		Iterable iterable = (Iterable) feToken.evaluate(context);
-		feToken.setIterator(iterable.iterator());
+        ForEachToken.ForEachTokenIterator feIter = feToken.evaluate(context);
 		tokenStream.consume();
 
 		context.model.enterScope();
@@ -139,7 +138,7 @@ public class InterpretedTemplate implements Template {
 
 			// in case we do not want to evaluate the body, we just do a quick
 			// scan until the matching end
-			if (inheritedSkip || !feToken.iterator().hasNext()) {
+			if (inheritedSkip || !feIter.hasNext()) {
 				Token contentToken;
 				while ((contentToken = tokenStream.currentToken()) != null
 						&& !(contentToken instanceof EndToken)) {
@@ -153,10 +152,10 @@ public class InterpretedTemplate implements Template {
 				}
 			} else {
 
-				while (feToken.iterator().hasNext()) {
+				while (feIter.hasNext()) {
 
-					context.model.put(feToken.getVarName(), feToken.advance());
-					addSpecialVariables(feToken, context.model);
+					context.model.put(feToken.getVarName(), feIter.advance());
+					addSpecialVariables(feIter, feToken.getVarName(), context.model);
 
 					// for each iteration we need to rewind to the beginning
 					// of the for loop
@@ -172,7 +171,7 @@ public class InterpretedTemplate implements Template {
 						tokenStream.consume();
 						context.notifyProcessListener(contentToken, Action.END);
 					}
-					if (!feToken.isLast()) {
+					if (!feIter.isLast()) {
 						output.append(feToken.getSeparator());
 					}
 				}
@@ -314,16 +313,16 @@ public class InterpretedTemplate implements Template {
 		return template;
 	}
 
-    protected void addSpecialVariables(ForEachToken feToken, Map<String, Object> model) {
-		String suffix = feToken.getVarName();
+    protected void addSpecialVariables(ForEachToken.ForEachTokenIterator feToken, String varName, Map<String, Object> model) {
+		String suffix = varName;
 		addSpecialVariables(feToken, model, suffix);
 
 		// special _it variable as an alias for run variable in inner loop
-		model.put(SPECIAL_ITERATOR_VARIABLE, model.get(feToken.getVarName()));
+		model.put(SPECIAL_ITERATOR_VARIABLE, model.get(varName));
 		addSpecialVariables(feToken, model, SPECIAL_ITERATOR_VARIABLE);
 	}
 
-    private void addSpecialVariables(ForEachToken feToken, Map<String, Object> model, String suffix) {
+    private void addSpecialVariables(ForEachToken.ForEachTokenIterator feToken, Map<String, Object> model, String suffix) {
         model.put(FIRST_PREFIX + suffix, feToken.isFirst());
         model.put(LAST_PREFIX + suffix, feToken.isLast());
         model.put(EVEN_PREFIX + suffix, feToken.getIndex() % 2 == 0);

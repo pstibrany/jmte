@@ -15,21 +15,10 @@ public class ForEachToken extends ExpressionToken {
 	private final String varName;
 	private final String separator;
 
-	private transient Iterator<Object> iterator;
-	private transient int index;
-
 	public ForEachToken(String expression, String varName, String separator) {
 		super(expression);
 		this.varName = varName;
 		this.separator = separator != null ? separator : "";
-		this.index = -1;
-	}
-
-	public ForEachToken(List<String> segments, String expression, String varName, String separator) {
-		super(segments, expression);
-		this.varName = varName;
-		this.separator = separator != null ? separator : "";
-		this.index = -1;
 	}
 
 	@Override
@@ -43,7 +32,7 @@ public class ForEachToken extends ExpressionToken {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object evaluate(TemplateContext context) {
+	public ForEachTokenIterator evaluate(TemplateContext context) {
 		Object value = evaluatePlain(context);
 
 		final Iterable<Object> iterable;
@@ -63,11 +52,7 @@ public class ForEachToken extends ExpressionToken {
 			}
 		}
 
-		return iterable;
-	}
-
-	public Iterator<Object> iterator() {
-		return getIterator();
+		return new ForEachTokenIterator(iterable.iterator());
 	}
 
 	public String getVarName() {
@@ -78,36 +63,38 @@ public class ForEachToken extends ExpressionToken {
 		return separator;
 	}
 
-	public boolean isLast() {
-		return !iterator().hasNext();
-	}
+    public class ForEachTokenIterator {
+        private final Iterator<Object> iterator;
+        private int index = -1;
 
-	public boolean isFirst() {
-		return index == 0;
-	}
+        ForEachTokenIterator(Iterator<Object> iterator) {
+            this.iterator = iterator;
+        }
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
 
-	public int getIndex() {
-		return index;
-	}
+        public boolean isLast() {
+            return !iterator.hasNext();
+        }
 
-	public void setIterable(Iterable<Object> iterable) {
-		this.iterator = iterable.iterator();
-	}
+        public boolean isFirst() {
+            return index == 0;
+        }
 
-	public void setIterator(Iterator<Object> iterator) {
-		this.iterator = iterator;
-	}
+        public void setIndex(int index) {
+            this.index = index;
+        }
 
-	public Iterator<Object> getIterator() {
-		return iterator;
-	}
-	
-	public Object advance() {
-		index++;
-		return iterator.next();
-	}
+        public int getIndex() {
+            return index;
+        }
+
+        public Object advance() {
+            index++;
+            return iterator.next();
+        }
+
+    }
 }

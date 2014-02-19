@@ -62,32 +62,6 @@ public class TemplateContext {
 	}
 
 	/**
-	 * Gets the top element from the stack without removing it.
-	 */
-	public Token peek() {
-		if (scopes.isEmpty()) {
-			return null;
-		} else {
-			Token token = scopes.get(scopes.size() - 1);
-			return token;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	/**
-	 * Gets the first element of the given type from the stack without removing it.
-	 */
-	public <T extends Token> T peek(Class<T> type) {
-		for (int i = scopes.size() - 1; i >= 0; i--) {
-			Token token = scopes.get(i);
-			if (token.getClass().equals(type)) {
-				return (T) token;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Allows you to send additional notifications of executed processing steps.
 	 * 
 	 * @param token

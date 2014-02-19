@@ -1025,27 +1025,15 @@ public abstract class AbstractEngineTest {
 
 	@Test
 	public void processor() throws Exception {
-		Processor<Boolean> oddExpression = new Processor<Boolean>() {
-
-			@Override
-			public Boolean eval(TemplateContext context) {
-				ForEachToken foreach = context.peek(ForEachToken.class);
-				if (foreach != null) {
-					return foreach.getIndex() % 2 == 1;
-				}
-				return false;
-			}
-		};
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.putAll(DEFAULT_MODEL);
-		model.put("oddExpression", oddExpression);
 
 		String output = newEngine().transform(
 				"${foreach list item}${item}\n" + "${if last_item}last${end}"
 						+ "${if first_item}first${end}"
 						+ "${if even_item} even${end}"
-						+ "${if oddExpression} odd${end}${end}", model);
-		assertEquals("1.1, 1.2\nfirst even" + "2.1, 2.2\nlast odd", output);
+						+ "${if odd_item} odd${end}${end}", model);
+		assertEquals("1.1, 1.2\nfirst even2.1, 2.2\nlast odd", output);
 	}
 
 	@Test
