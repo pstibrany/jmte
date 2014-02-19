@@ -62,9 +62,4 @@ public class IfToken extends ExpressionToken {
 
 		return evaluated;
 	}
-
-	@Override
-	public String emit() {
-		return getText();
-	}
 }

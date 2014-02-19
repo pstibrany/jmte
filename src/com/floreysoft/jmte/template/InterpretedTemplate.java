@@ -46,7 +46,7 @@ public class InterpretedTemplate implements Template {
         this.sourceName = sourceName;
         this.engine = engine;
 
-        tokens = TokenStream.parseTokens(sourceName, template, engine.getExprStartToken(), engine.getExprEndToken());
+        tokens = TokenStream.parseTokens(template, engine.getExprStartToken(), engine.getExprEndToken());
 	}
 
 	@Override

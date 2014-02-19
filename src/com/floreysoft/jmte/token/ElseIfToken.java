@@ -23,10 +23,4 @@ public class ElseIfToken extends IfToken {
 		}
 		return text;
 	}
-	
-	@Override
-	public String emit() {
-		return ELSE_IF;
-	}
-
 }

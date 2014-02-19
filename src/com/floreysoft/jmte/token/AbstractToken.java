@@ -5,21 +5,8 @@ public abstract class AbstractToken implements Token {
 	protected String text;
 	protected int line;
 	protected int column;
-	protected String sourceName;
 
 	public AbstractToken() {
-	}
-
-	public AbstractToken(char[] buffer, int start, int end, int tokenIndex) {
-		this(null, buffer, start, end, tokenIndex);
-	}
-
-	public AbstractToken(String sourceName, char[] buffer, int start, int end,
-			int tokenIndex) {
-		this.setSourceName(sourceName);
-		setText(buffer, start, end);
-		setLine(buffer, start, end);
-		setColumn(buffer, start, end);
 	}
 
 	public String getText() {
@@ -75,19 +62,5 @@ public abstract class AbstractToken implements Token {
 	@Override
 	public String toString() {
 		return getText();
-	}
-
-	@Override
-	public String emit() {
-		return getText();
-	}
-	
-	public void setSourceName(String sourceName) {
-		this.sourceName = sourceName;
-	}
-
-	@Override
-	public String getSourceName() {
-		return sourceName;
 	}
 }

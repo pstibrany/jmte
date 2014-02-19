@@ -11,9 +11,4 @@ public class PlainTextToken extends AbstractToken {
 	public Object evaluate(TemplateContext context) {
 		return getText();
 	}
-
-	@Override
-	public String emit() {
-		return getText();
-	}
 }

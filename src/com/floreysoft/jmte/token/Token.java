@@ -21,9 +21,5 @@ public interface Token {
 
 	public int getColumn();
 
-	public String getSourceName();
-	
 	public Object evaluate(TemplateContext context);
-	
-	public String emit();
 }

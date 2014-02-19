@@ -1,9 +1,7 @@
 package com.floreysoft.jmte.token;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.floreysoft.jmte.util.StartEndPair;
 import com.floreysoft.jmte.util.Util;
@@ -17,7 +15,7 @@ public class TokenStream {
         this.tokens = tokens;
 	}
 
-	public static List<Token> parseTokens(String sourceName, String input, String splitStart, String splitEnd) {
+	public static List<Token> parseTokens(String input, String splitStart, String splitEnd) {
         Lexer lexer = new Lexer();
         List<StartEndPair> scan = Util.scan(input, splitStart, splitEnd, true);
 		List<Token> tokens = new ArrayList<Token>();
@@ -39,7 +37,6 @@ public class TokenStream {
 			if (token == null) {
 				continue;
 			}
-			token.setSourceName(sourceName);
 			tokens.add(token);
 		}
 

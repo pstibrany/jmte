@@ -18,9 +18,4 @@ public class ElseToken extends AbstractToken {
 	public Object evaluate(TemplateContext context) {
         return "";
 	}
-
-	@Override
-	public String emit() {
-		return ELSE;
-	}
 }
