@@ -101,10 +101,6 @@ public class TemplateContext {
 		}
 	}
 
-	public AnnotationProcessor<?> resolveAnnotationProcessor(String type) {
-		return engine.resolveAnnotationProcessor(type);
-	}
-
 	public <C> Renderer<C> resolveRendererForClass(Class<C> clazz) {
 		return engine.getRendererRegistry().resolveRendererForClass(clazz);
 	}

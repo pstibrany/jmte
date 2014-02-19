@@ -2,7 +2,6 @@ package com.floreysoft.jmte;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -98,8 +97,6 @@ public final class Engine {
 	private final Map<String, Template> templatesCache = new ConcurrentHashMap<String, Template>();
 
     private final RendererRegistry renderers = new RendererRegistry();
-
-	private final Map<String, AnnotationProcessor<?>> annotationProcessors = new HashMap<String, AnnotationProcessor<?>>();
 
 	/**
 	 * Creates a new engine having <code>${</code> and <code>}</code> as start
@@ -226,20 +223,6 @@ public final class Engine {
 	public synchronized Set<String> getUsedVariables(String template) {
 		Template templateImpl = getTemplate(template, null);
 		return templateImpl.getUsedVariables();
-	}
-
-	public synchronized Engine registerAnnotationProcessor(AnnotationProcessor<?> annotationProcessor) {
-		annotationProcessors.put(annotationProcessor.getType(), annotationProcessor);
-		return this;
-	}
-
-	public synchronized Engine deregisterAnnotationProcessor(AnnotationProcessor<?> annotationProcessor) {
-		annotationProcessors.remove(annotationProcessor.getType());
-		return this;
-	}
-
-	AnnotationProcessor<?> resolveAnnotationProcessor(String type) {
-		return annotationProcessors.get(type);
 	}
 
 	public synchronized void setEncoder(Encoder encoder) {

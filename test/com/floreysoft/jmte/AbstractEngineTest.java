@@ -22,7 +22,6 @@ import com.floreysoft.jmte.realLife.RealLiveTest;
 import com.floreysoft.jmte.renderer.RawRenderer;
 import com.floreysoft.jmte.sample.NamedDateRenderer;
 import com.floreysoft.jmte.sample.NamedStringRenderer;
-import com.floreysoft.jmte.token.AnnotationToken;
 import com.floreysoft.jmte.token.ForEachToken;
 import com.floreysoft.jmte.token.Token;
 import com.floreysoft.jmte.util.Util;
@@ -1125,33 +1124,6 @@ public abstract class AbstractEngineTest {
 		String input = "${-- comment}${address}";
 		String output = newEngine().transform(input, DEFAULT_MODEL);
 		assertEquals("Filbert", output);
-	}
-
-	@Test
-	public void annotation() throws Exception {
-		String input = "${@type MyBean bean}${foreach bean.list item , }${item.property1}${end}";
-		String output = newEngine().transform(input, DEFAULT_MODEL);
-		assertEquals("1.1, 2.1", output);
-	}
-
-	@Test
-	public void annotationProcessor() throws Exception {
-		String input = "${@sample argument}${foreach bean.list item , }${item.property1}${end}";
-		Engine engine = newEngine();
-		engine.registerAnnotationProcessor(new AnnotationProcessor<String>() {
-
-			@Override
-			public String eval(AnnotationToken token, TemplateContext context) {
-				return token.getArguments();
-			}
-
-			@Override
-			public String getType() {
-				return "sample";
-			}
-		});
-		String output = engine.transform(input, DEFAULT_MODEL);
-		assertEquals("argument1.1, 2.1", output);
 	}
 
 	@Test
