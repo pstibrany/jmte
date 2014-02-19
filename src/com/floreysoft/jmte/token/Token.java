@@ -25,7 +25,5 @@ public interface Token {
 	
 	public Object evaluate(TemplateContext context);
 	
-	public int getTokenIndex();
-	
 	public String emit();
 }

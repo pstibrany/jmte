@@ -1,7 +1,9 @@
 package com.floreysoft.jmte.token;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.floreysoft.jmte.util.StartEndPair;
 import com.floreysoft.jmte.util.Util;
@@ -21,14 +23,12 @@ public class TokenStream {
 		List<Token> tokens = new ArrayList<Token>();
 		final char[] inputChars = input.toCharArray();
 		int offset = 0;
-		int index = 0;
 		for (StartEndPair startEndPair : scan) {
 			int plainTextLengthBeforeNextToken = startEndPair.start
 					- splitStart.length() - offset;
 			if (plainTextLengthBeforeNextToken != 0) {
 				AbstractToken token = new PlainTextToken(Util.NO_QUOTE_MINI_PARSER.unescape(new String(inputChars,
 						offset, plainTextLengthBeforeNextToken)));
-				token.setTokenIndex(index++);
 				tokens.add(token);
 			}
 			offset = startEndPair.end + splitEnd.length();
@@ -40,7 +40,6 @@ public class TokenStream {
 				continue;
 			}
 			token.setSourceName(sourceName);
-			token.setTokenIndex(index++);
 			tokens.add(token);
 		}
 
@@ -51,7 +50,6 @@ public class TokenStream {
 		if (remainingChars != 0) {
 			AbstractToken token = new PlainTextToken(Util.NO_QUOTE_MINI_PARSER.unescape(new String(inputChars,
 					offset, remainingChars)));
-			token.setTokenIndex(index++);
 			tokens.add(token);
 		}
 
@@ -75,8 +73,19 @@ public class TokenStream {
 		return currentToken;
 	}
 
+    private int getTokenIndex(Token token) {
+        int index = 0;
+        for (Token t: tokens) {
+            if (t == token) {
+                return index;
+            }
+            index ++;
+        }
+        return -1;
+    }
+
 	public void rewind(Token tokenToRewindTo) {
-		this.currentTokenIndex = tokenToRewindTo.getTokenIndex() + 1;
+		this.currentTokenIndex = getTokenIndex(tokenToRewindTo) + 1;
 		consume();
 	}
 }

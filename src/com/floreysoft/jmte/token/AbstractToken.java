@@ -6,17 +6,8 @@ public abstract class AbstractToken implements Token {
 	protected int line;
 	protected int column;
 	protected String sourceName;
-	private int tokenIndex;
 
 	public AbstractToken() {
-	}
-
-	public AbstractToken(AbstractToken token) {
-		this.text = token.text;
-		this.line = token.line;
-		this.column = token.column;
-		this.sourceName = token.sourceName;
-		this.setTokenIndex(token.getTokenIndex());
 	}
 
 	public AbstractToken(char[] buffer, int start, int end, int tokenIndex) {
@@ -29,7 +20,6 @@ public abstract class AbstractToken implements Token {
 		setText(buffer, start, end);
 		setLine(buffer, start, end);
 		setColumn(buffer, start, end);
-		this.setTokenIndex(tokenIndex);
 	}
 
 	public String getText() {
@@ -99,14 +89,5 @@ public abstract class AbstractToken implements Token {
 	@Override
 	public String getSourceName() {
 		return sourceName;
-	}
-	
-	@Override
-	public int getTokenIndex() {
-		return tokenIndex;
-	}
-
-	public void setTokenIndex(int tokenIndex) {
-		this.tokenIndex = tokenIndex;
 	}
 }
