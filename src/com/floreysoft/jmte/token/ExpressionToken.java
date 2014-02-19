@@ -1,17 +1,13 @@
 package com.floreysoft.jmte.token;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 import com.floreysoft.jmte.TemplateContext;
 import com.floreysoft.jmte.util.Util;
 
 public abstract class ExpressionToken extends AbstractToken {
 
-	public final static String segmentsToString(List<String> segments,
+	public static String segmentsToString(List<String> segments,
 			int start, int end) {
 		if (start >= segments.size() || end > segments.size()) {
 			throw new IllegalArgumentException("Range is not inside segments");
@@ -43,48 +39,12 @@ public abstract class ExpressionToken extends AbstractToken {
 		this.expression = expression;
 	}
 
-	public boolean isComposed() {
-		return getSegments().size() > 1;
-	}
-
 	public boolean isEmpty() {
 		return getSegments().size() == 0;
 	}
 
 	public List<String> getSegments() {
 		return segments;
-	}
-
-	public String getFirstSegment() {
-		if (isEmpty()) {
-			throw new IllegalStateException("There is no first segment");
-		}
-
-		return getSegments().get(0);
-	}
-
-	public String getLastSegment() {
-		if (isEmpty()) {
-			throw new IllegalStateException("There is no last segment");
-		}
-
-		return getSegments().get(getSegments().size() - 1);
-	}
-
-	public String getAllButLastSegment() {
-		if (isEmpty()) {
-			throw new IllegalStateException("There are no segments");
-		}
-
-		return segmentsToString(segments, 0, getSegments().size() - 1);
-	}
-
-	public String getAllButFirstSegment() {
-		if (isEmpty()) {
-			throw new IllegalStateException("There are no segments");
-		}
-
-		return segmentsToString(segments, 1, getSegments().size());
 	}
 
 	public void setExpression(String expression) {

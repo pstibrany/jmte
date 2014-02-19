@@ -32,41 +32,8 @@ public class StringToken extends ExpressionToken {
 		setText(text);
 	}
 
-	public StringToken(String variableName) {
-		this(variableName, variableName, null, null, null, null, null);
-	}
-
-	public StringToken(String text, List<String> segments, String variableName,
-			String defaultValue, String prefix, String suffix,
-			String rendererName, String parameters) {
-		super(segments, variableName);
-		this.defaultValue = defaultValue;
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.rendererName = rendererName;
-		this.parameters = parameters;
-		setText(text);
-	}
-
-	public StringToken(List<String> segments, String variableName) {
-		super(segments, variableName);
-		this.defaultValue = null;
-		this.prefix = null;
-		this.suffix = null;
-		this.rendererName = null;
-		this.parameters = null;
-	}
-
 	public String getPrefix() {
 		return prefix;
-	}
-
-	public String getSuffix() {
-		return suffix;
-	}
-
-	public String getDefaultValue() {
-		return defaultValue;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -119,10 +86,6 @@ public class StringToken extends ExpressionToken {
 				return prefixedRenderedResult;
 			}
 		}
-	}
-
-	public String getRendererName() {
-		return rendererName;
 	}
 
 	public String getParameters() {
