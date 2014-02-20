@@ -143,49 +143,45 @@ public final class Engine {
 	 *            the model used to evaluate expressions inside the template
 	 * @return the expanded output
 	 */
-	public synchronized String transform(String template, Locale locale, String sourceName, Map<String, Object> model,
-			ProcessListener processListener) {
+	public String transform(String template, Locale locale, String sourceName, Map<String, ?> model, ProcessListener processListener) {
 		return transformInternal(template, locale, sourceName, model, getModelAdaptor(), processListener);
 	}
 
-	public synchronized String transform(String template, String sourceName, Map<String, Object> model,
+	public String transform(String template, String sourceName, Map<String, ?> model,
 			ProcessListener processListener) {
 		return transformInternal(template, sourceName, model, getModelAdaptor(), processListener);
 	}
 
-	public synchronized String transform(String template, Locale locale, String sourceName, Map<String, Object> model) {
+	public String transform(String template, Locale locale, String sourceName, Map<String, ?> model) {
 		return transformInternal(template, locale, sourceName, model, getModelAdaptor(), null);
 	}
 
-	public synchronized String transform(String template, String sourceName, Map<String, Object> model) {
+	public String transform(String template, String sourceName, Map<String, ?> model) {
 		return transformInternal(template, sourceName, model, getModelAdaptor(), null);
 	}
 
-	public synchronized String transform(String template, Locale locale, Map<String, Object> model) {
+	public String transform(String template, Locale locale, Map<String, ?> model) {
 		return transformInternal(template, locale, null, model, getModelAdaptor(), null);
 	}
 
-	public synchronized String transform(String template, Map<String, Object> model) {
+	public String transform(String template, Map<String, ?> model) {
 		return transformInternal(template, null, model, getModelAdaptor(), null);
 	}
 
-	public synchronized String transform(String template, Map<String, Object> model, ProcessListener processListener) {
+	public String transform(String template, Map<String, ?> model, ProcessListener processListener) {
 		return transformInternal(template, null, model, getModelAdaptor(), processListener);
 	}
 
-	public synchronized String transform(String template, Locale locale, Map<String, Object> model,
-			ProcessListener processListener) {
+	public String transform(String template, Locale locale, Map<String, ?> model, ProcessListener processListener) {
 		return transformInternal(template, locale, null, model, getModelAdaptor(), processListener);
 	}
 
-	String transformInternal(String template, String sourceName, Map<String, Object> model, ModelAdaptor modelAdaptor,
-			ProcessListener processListener) {
+	private String transformInternal(String template, String sourceName, Map<String, ?> model, ModelAdaptor modelAdaptor, ProcessListener processListener) {
 		Locale locale = Locale.getDefault();
 		return transformInternal(template, locale, sourceName, model, modelAdaptor, processListener);
 	}
 
-	String transformInternal(String template, Locale locale, String sourceName, Map<String, Object> model,
-			ModelAdaptor modelAdaptor, ProcessListener processListener) {
+    private String transformInternal(String template, Locale locale, String sourceName, Map<String, ?> model, ModelAdaptor modelAdaptor, ProcessListener processListener) {
 		Template templateImpl = getTemplate(template, sourceName);
 		String output = templateImpl.transform(model, locale, modelAdaptor, processListener);
 		return output;

@@ -99,16 +99,18 @@ public class InterpretedTemplate implements Template {
 		return usedVariables;
 	}
 
-    public String transform(Map<String, Object> model, Locale locale, ProcessListener processListener) {
+    @Override
+    public String transform(Map<String, ?> model, Locale locale, ProcessListener processListener) {
         return transform(model, locale, engine.getModelAdaptor(), processListener);
     }
 
-    public String transform(Map<String, Object> model, Locale locale) {
+    @Override
+    public String transform(Map<String, ?> model, Locale locale) {
         return transform(model, locale, engine.getModelAdaptor(), null);
     }
 
     @Override
-	public String transform(Map<String, Object> model, Locale locale, ModelAdaptor modelAdaptor, ProcessListener processListener) {
+	public String transform(Map<String, ?> model, Locale locale, ModelAdaptor modelAdaptor, ProcessListener processListener) {
         TemplateContext context = new TemplateContext(template, locale, sourceName,
                 new ScopedMap(model), modelAdaptor, engine, engine.getErrorHandler(), processListener);
 

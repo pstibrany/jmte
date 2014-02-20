@@ -20,7 +20,7 @@ public interface Template {
 	 *            model
 	 * @return the expanded output
 	 */
-	public String transform(Map<String, Object> model, Locale locale,
+	public String transform(Map<String, ?> model, Locale locale,
 			ModelAdaptor modelAdaptor, ProcessListener processListener);
 
 	/**
@@ -32,7 +32,7 @@ public interface Template {
 	 *            the locale used to render this template
 	 * @return the expanded output
 	 */
-	public String transform(Map<String, Object> model, Locale locale,
+	public String transform(Map<String, ?> model, Locale locale,
 			ProcessListener processListener);
 
 	/**
@@ -44,7 +44,7 @@ public interface Template {
 	 *            the locale used to render this template
 	 * @return the expanded output
 	 */
-	public String transform(Map<String, Object> model, Locale locale);
+	public String transform(Map<String, ?> model, Locale locale);
 
 	public Set<String> getUsedVariables();
 

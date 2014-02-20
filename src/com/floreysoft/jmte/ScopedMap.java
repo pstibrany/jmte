@@ -15,7 +15,7 @@ import java.util.Stack;
  * 
  */
 public class ScopedMap implements Map<String, Object> {
-	private final Map<String, Object> rawModel;
+	private final Map<String, ?> rawModel;
 	private final Stack<Map<String, Object>> scopes = new Stack<Map<String, Object>>();
 
 	public void clear() {
@@ -54,7 +54,11 @@ public class ScopedMap implements Map<String, Object> {
 	}
 
 	public Object put(String key, Object value) {
-		return getCurrentScope().put(key, value);
+        if (scopes.size() > 0) {
+            return scopes.peek().put(key, value);
+        } else {
+            throw new IllegalStateException("Cannot put values into rawModel");
+        }
 	}
 
 	public void putAll(Map<? extends String, ? extends Object> m) {
@@ -79,7 +83,7 @@ public class ScopedMap implements Map<String, Object> {
 	 * @param rawModel
 	 *            the raw model backing this scoped map
 	 */
-	public ScopedMap(Map<String, Object> rawModel) {
+	public ScopedMap(Map<String, ?> rawModel) {
 		if (rawModel == null) {
 			throw new IllegalArgumentException("Model must not be null");
 		}
@@ -91,7 +95,7 @@ public class ScopedMap implements Map<String, Object> {
 	 * 
 	 * @return the raw model backing this scoped map
 	 */
-	public Map<String, Object> getRawModel() {
+	public Map<String, ?> getRawModel() {
 		return rawModel;
 	}
 
@@ -119,16 +123,7 @@ public class ScopedMap implements Map<String, Object> {
 		scopes.pop();
 	}
 
-	protected Map<String, Object> getCurrentScope() {
-		if (scopes.size() > 0) {
-			return scopes.peek();
-		} else {
-			return rawModel;
-		}
-
-	}
-
-	protected Map<String, Object> createScope() {
+    protected Map<String, Object> createScope() {
 		return new HashMap<String, Object>();
 	}
 
