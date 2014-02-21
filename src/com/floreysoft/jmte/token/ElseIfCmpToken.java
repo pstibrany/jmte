@@ -7,13 +7,13 @@ import com.floreysoft.jmte.TemplateContext;
 public class ElseIfCmpToken extends ElseIfToken {
 	private final String operand;
 
-	public ElseIfCmpToken(String expression, String operand, boolean negated) {
-		super(expression, negated);
+	public ElseIfCmpToken(String expression, String operand, boolean negated, int line, int column) {
+		super(expression, negated, line, column);
 		this.operand = operand;
 	}
 
-	public ElseIfCmpToken(List<String> segments, String expression, String operand, boolean negated) {
-		super(segments, expression, negated);
+	public ElseIfCmpToken(List<String> segments, String expression, String operand, boolean negated, int line, int column) {
+		super(segments, expression, negated, line, column);
 		this.operand = operand;
 	}
 

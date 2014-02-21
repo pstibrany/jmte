@@ -22,11 +22,10 @@ public class TokenStream {
 		final char[] inputChars = input.toCharArray();
 		int offset = 0;
 		for (StartEndPair startEndPair : scan) {
-			int plainTextLengthBeforeNextToken = startEndPair.start
-					- splitStart.length() - offset;
+			int plainTextLengthBeforeNextToken = startEndPair.start - splitStart.length() - offset;
 			if (plainTextLengthBeforeNextToken != 0) {
 				AbstractToken token = new PlainTextToken(Util.NO_QUOTE_MINI_PARSER.unescape(new String(inputChars,
-						offset, plainTextLengthBeforeNextToken)));
+						offset, plainTextLengthBeforeNextToken)), 0, 0);
 				tokens.add(token);
 			}
 			offset = startEndPair.end + splitEnd.length();
@@ -46,7 +45,7 @@ public class TokenStream {
 		int remainingChars = input.length() - offset;
 		if (remainingChars != 0) {
 			AbstractToken token = new PlainTextToken(Util.NO_QUOTE_MINI_PARSER.unescape(new String(inputChars,
-					offset, remainingChars)));
+					offset, remainingChars)), 0, 0);
 			tokens.add(token);
 		}
 

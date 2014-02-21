@@ -1,7 +1,5 @@
 package com.floreysoft.jmte.token;
 
-import java.util.List;
-
 import com.floreysoft.jmte.ModelBuilder;
 import com.floreysoft.jmte.NamedRenderer;
 import com.floreysoft.jmte.Renderer;
@@ -17,13 +15,13 @@ public class StringToken extends ExpressionToken {
 	private final String rendererName; // long
 	private final String parameters; // full
 
-	public StringToken() {
-		this("", "", null, null, null, null, null);
+	public StringToken(int line, int column) {
+		this("", "", null, null, null, null, null, line, column);
 	}
 
 	public StringToken(String text, String variableName, String defaultValue,
-			String prefix, String suffix, String rendererName, String parameters) {
-		super(variableName);
+			String prefix, String suffix, String rendererName, String parameters, int line, int column) {
+		super(variableName, line, column);
 		this.defaultValue = defaultValue;
 		this.prefix = prefix;
 		this.suffix = suffix;

@@ -8,13 +8,13 @@ import com.floreysoft.jmte.TemplateContext;
 public class IfCmpToken extends IfToken {
 	private final String operand;
 
-	public IfCmpToken(String expression, String operand, boolean negated) {
-		super(expression, negated);
+	public IfCmpToken(String expression, String operand, boolean negated, int line, int column) {
+		super(expression, negated, line, column);
 		this.operand = operand;
 	}
 
-	public IfCmpToken(List<String> segments, String expression, String operand, boolean negated) {
-		super(segments, expression, negated);
+	public IfCmpToken(List<String> segments, String expression, String operand, boolean negated, int line, int column) {
+		super(segments, expression, negated, line, column);
 		this.operand = operand;
 	}
 

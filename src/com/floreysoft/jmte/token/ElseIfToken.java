@@ -6,12 +6,12 @@ public class ElseIfToken extends IfToken {
 
 	public static final String ELSE_IF = "elseif";
 	
-	public ElseIfToken(List<String> segments, String expression, boolean negated) {
-		super(segments, expression, negated);
+	public ElseIfToken(List<String> segments, String expression, boolean negated, int line, int column) {
+		super(segments, expression, negated, line, column);
 	}
 	
-	public ElseIfToken(String ifExpression, boolean negated) {
-		super(ifExpression, negated);
+	public ElseIfToken(String ifExpression, boolean negated, int line, int column) {
+		super(ifExpression, negated, line, column);
 	}
 
 	@Override

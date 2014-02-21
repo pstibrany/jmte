@@ -15,8 +15,8 @@ public class ForEachToken extends ExpressionToken {
 	private final String varName;
 	private final String separator;
 
-	public ForEachToken(String expression, String varName, String separator) {
-		super(expression);
+	public ForEachToken(String expression, String varName, String separator, int line, int column) {
+		super(expression, line, column);
 		this.varName = varName;
 		this.separator = separator != null ? separator : "";
 	}

@@ -10,18 +10,43 @@ public class Lexer {
 
 	public AbstractToken nextToken(final char[] template, final int start,
 			final int end) {
-		String input = new String(template, start, end - start);
-		if (input.startsWith("--")) {
+		String text = new String(template, start, end - start);
+		if (text.startsWith("--")) {
 			// comment
 			return null;
 		}
-		AbstractToken token = innerNextToken(input);
-		token.setText(template, start, end);
-		token.setLine(template, start, end);
-		token.setColumn(template, start, end);
+
+        int line = getLine(template, start, end);
+        int column = getColumn(template, start, end);
+
+		AbstractToken token = innerNextToken(text, line, column);
 		return token;
 	}
-	
+
+    static int getLine(char[] buffer, int start, int end) {
+        int line = 1;
+        for (int i = 0; i < start; i++) {
+            if (buffer[i] == '\n') {
+                line++;
+            }
+        }
+        return line;
+    }
+
+    static int getColumn(char[] buffer, int start, int end) {
+        int column = 0;
+        if (buffer.length != 0) {
+            for (int i = start; i >= 0; i--) {
+                if (buffer[i] == '\n') {
+                    break;
+                } else {
+                    column++;
+                }
+            }
+        }
+        return column;
+    }
+
 	private String unescapeAccess(List<? extends Object> arr,int index){
 		String val = access(arr,index);
 		if (val!=null && val.trim().length()>0){
@@ -30,7 +55,7 @@ public class Lexer {
 		return val;
 	}
 	
-	private AbstractToken innerNextToken(final String untrimmedInput) {
+	private AbstractToken innerNextToken(final String untrimmedInput, int line, int column) {
 		final String input = Util.trimFront(untrimmedInput);
 
 		final List<String> split = Util.RAW_MINI_PARSER.splitOnWhitespace(input);
@@ -38,7 +63,7 @@ public class Lexer {
 		// LENGTH 0
 		if (split.size() == 0) {
 			// empty expression like ${}
-			return new StringToken();
+			return new StringToken(line, column);
 		}
 
 		if (split.size() >= 2) {
@@ -63,9 +88,9 @@ public class Lexer {
 				}
 				if (!ifExpression.contains("=")) {
 					if (isIf) {
-						return new IfToken(ifExpression, negated);
+						return new IfToken(ifExpression, negated, line, column);
 					} else {
-						return new ElseIfToken(ifExpression, negated);
+						return new ElseIfToken(ifExpression, negated, line, column);
 					}
 				} else {
 					final String[] ifSplit = ifExpression.split("=");
@@ -76,9 +101,9 @@ public class Lexer {
 						operand = operand.substring(1, operand.length() - 1);
 					}
 					if (isIf) {
-						return new IfCmpToken(variable, operand, negated);
+						return new IfCmpToken(variable, operand, negated, line, column);
 					} else {
-						return new ElseIfCmpToken(variable, operand, negated);
+						return new ElseIfCmpToken(variable, operand, negated, line, column);
 					}
 				}
 			}
@@ -113,7 +138,7 @@ public class Lexer {
 					separator = Util.NO_QUOTE_MINI_PARSER.unescape(separator);
 				}
 				return new ForEachToken(objectExpression, varName, separator
-						.length() != 0 ? separator : null);
+						.length() != 0 ? separator : null, line, column);
 			}
 		}
 
@@ -121,14 +146,14 @@ public class Lexer {
 		// ${
 		// } which might be used for silent line breaks
 		if (objectExpression.equals("")) {
-			return new StringToken();
+			return new StringToken(line, column);
 		}
 		final String cmd = objectExpression;
 		if (cmd.equalsIgnoreCase(ElseToken.ELSE)) {
-			return new ElseToken();
+			return new ElseToken(line, column);
 		}
 		if (cmd.equalsIgnoreCase(EndToken.END)) {
-			return new EndToken();
+			return new EndToken(line, column);
 		}
 
 		// ${<h1>,address(NIX),</h1>;long(full)}
@@ -176,12 +201,12 @@ public class Lexer {
 
 		// this is not a well formed variable name
 		if (variableName.contains(" ")) {
-			return new InvalidToken();
+			return new InvalidToken(untrimmedInput, line, column);
 		}
 
 		final StringToken stringToken = new StringToken(untrimmedInput,
 				variableName, defaultValue, prefix, suffix, rendererName,
-				parameters);
+				parameters, line, column);
 		return stringToken;
 
 	}

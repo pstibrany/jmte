@@ -6,12 +6,13 @@ import com.floreysoft.jmte.TemplateContext;
 public class EndToken extends AbstractToken {
 	public static final String END = "end";
 
-	@Override
+    public EndToken(int line, int column) {
+        super(line, column);
+    }
+
+    @Override
 	public String getText() {
-		if (text == null) {
-			text = END;
-		}
-		return text;
+        return END;
 	}
 
 	@Override

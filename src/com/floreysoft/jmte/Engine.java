@@ -120,7 +120,7 @@ public final class Engine {
 		final TemplateContext context = new TemplateContext(null, null, null, new ScopedMap(model), modelAdaptor, this,
 				new SilentErrorHandler(), null);
 		for (String var : vars) {
-			final IfToken token = new IfToken(var, false);
+			final IfToken token = new IfToken(var, false, 0, 0);
 			if (!(Boolean) token.evaluate(context)) {
 				return false;
 			}

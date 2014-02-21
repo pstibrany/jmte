@@ -6,12 +6,13 @@ import com.floreysoft.jmte.TemplateContext;
 public class ElseToken extends AbstractToken {
 	public static final String ELSE = "else";
 
-	@Override
+    public ElseToken(int line, int column) {
+        super(line, column);
+    }
+
+    @Override
 	public String getText() {
-		if (text == null) {
-			text = ELSE;
-		}
-		return text;
+        return ELSE;
 	}
 
 	@Override

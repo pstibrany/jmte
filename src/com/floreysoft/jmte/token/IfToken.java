@@ -13,13 +13,13 @@ public class IfToken extends ExpressionToken {
 
 	protected final boolean negated;
 
-	public IfToken(String expression, boolean negated) {
-		super(expression);
+	public IfToken(String expression, boolean negated, int line, int column) {
+		super(expression, line, column);
 		this.negated = negated;
 	}
 
-	public IfToken(List<String> segments, String expression, boolean negated) {
-		super(segments, expression);
+	public IfToken(List<String> segments, String expression, boolean negated, int line, int column) {
+		super(segments, expression, line, column);
 		this.negated = negated;
 	}
 

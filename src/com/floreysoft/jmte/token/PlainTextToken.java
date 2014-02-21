@@ -3,11 +3,19 @@ package com.floreysoft.jmte.token;
 import com.floreysoft.jmte.TemplateContext;
 
 public class PlainTextToken extends AbstractToken {
-	public PlainTextToken(String text) {
-		setText(text);
+    private final String text;
+
+	public PlainTextToken(String text, int line, int column) {
+        super(line, column);
+        this.text = text;
 	}
 
-	@Override
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    @Override
 	public Object evaluate(TemplateContext context) {
 		return getText();
 	}
