@@ -23,11 +23,7 @@ public class ElseIfCmpToken extends ElseIfToken {
 
 	@Override
 	public String getText() {
-		if (text == null) {
-			text = String
-					.format(ELSE_IF + " %s='%s'", getExpression(), getOperand());
-		}
-		return text;
+        return String.format("%s %s='%s'", ELSE_IF, getExpression(), getOperand());
 	}
 
 	@Override

@@ -24,10 +24,7 @@ public class IfCmpToken extends IfToken {
 
 	@Override
 	public String getText() {
-		if (text == null) {
-			text = String.format("%s %s='%s'", IF, getExpression(), getOperand());
-		}
-		return text;
+        return String.format("%s %s='%s'", IF, getExpression(), getOperand());
 	}
 
 	@Override

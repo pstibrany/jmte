@@ -16,9 +16,6 @@ public class ElseIfToken extends IfToken {
 
 	@Override
 	public String getText() {
-		if (text == null) {
-			text = ELSE_IF + " " + getExpression();
-		}
-		return text;
+	    return ELSE_IF + " " + getExpression();
 	}
 }

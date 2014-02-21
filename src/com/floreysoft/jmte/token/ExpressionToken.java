@@ -6,18 +6,16 @@ import com.floreysoft.jmte.TemplateContext;
 import com.floreysoft.jmte.util.Util;
 
 public abstract class ExpressionToken extends AbstractToken {
-    protected String text;
-
-	private List<String> segments;
-	private String expression;
+	private final List<String> segments;
+	private final String expression;
 
 	public ExpressionToken(String expression, int line, int column) {
         super(line, column);
+
 		if (expression == null) {
 			throw new IllegalArgumentException(
 					"Parameter expression must not be null");
 		}
-        this.text = null;
         this.segments = Util.MINI_PARSER.split(expression, '.');
         this.expression = Util.MINI_PARSER.unescape(expression);
     }
@@ -48,13 +46,4 @@ public abstract class ExpressionToken extends AbstractToken {
 		final Object value = context.modelAdaptor.getValue(context, this, getSegments(), getExpression());
 		return value;
 	}
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
 }

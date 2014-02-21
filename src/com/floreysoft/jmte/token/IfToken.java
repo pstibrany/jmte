@@ -25,14 +25,7 @@ public class IfToken extends ExpressionToken {
 
 	@Override
 	public String getText() {
-		if (text == null) {
-			text = IF + " " + getExpression();
-		}
-		return text;
-	}
-
-	public boolean isNegated() {
-		return negated;
+        return IF + " " + getExpression();
 	}
 
 	@Override

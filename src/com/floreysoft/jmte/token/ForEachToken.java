@@ -23,11 +23,7 @@ public class ForEachToken extends ExpressionToken {
 
 	@Override
 	public String getText() {
-		if (text == null) {
-			text = FOREACH + " " + getExpression() + " " + varName
-					+ ((separator == null || separator.isEmpty()) ? "" : " " + separator);
-		}
-		return text;
+		return FOREACH + " " + getExpression() + " " + varName + (separator.isEmpty() ? "" : " " + separator);
 	}
 
 	@Override

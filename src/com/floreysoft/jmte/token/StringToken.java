@@ -9,6 +9,8 @@ import com.floreysoft.jmte.renderer.RawRenderer;
 
 public class StringToken extends ExpressionToken {
 	// ${<h1>,address(NIX),</h1>;long(full)}
+    private final String rawText;
+
 	private final String defaultValue; // NIX
 	private final String prefix; // <h1>
 	private final String suffix; // </h1>
@@ -23,12 +25,12 @@ public class StringToken extends ExpressionToken {
 			String prefix, String suffix, String rendererName, String parameters, int line, int column)
     {
 		super(variableName, line, column);
+        this.rawText = rawText;
 		this.defaultValue = defaultValue;
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.rendererName = rendererName;
 		this.parameters = parameters;
-		setText(rawText);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,7 +85,8 @@ public class StringToken extends ExpressionToken {
 		}
 	}
 
-	public String getParameters() {
-		return parameters;
-	}
+    @Override
+    public String getText() {
+        return rawText;
+    }
 }
