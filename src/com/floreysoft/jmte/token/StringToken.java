@@ -19,19 +19,16 @@ public class StringToken extends ExpressionToken {
 		this("", "", null, null, null, null, null, line, column);
 	}
 
-	public StringToken(String text, String variableName, String defaultValue,
-			String prefix, String suffix, String rendererName, String parameters, int line, int column) {
+	public StringToken(String rawText, String variableName, String defaultValue,
+			String prefix, String suffix, String rendererName, String parameters, int line, int column)
+    {
 		super(variableName, line, column);
 		this.defaultValue = defaultValue;
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.rendererName = rendererName;
 		this.parameters = parameters;
-		setText(text);
-	}
-
-	public String getPrefix() {
-		return prefix;
+		setText(rawText);
 	}
 
 	@SuppressWarnings("unchecked")
