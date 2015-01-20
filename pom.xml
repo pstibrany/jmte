@@ -8,7 +8,7 @@
   <groupId>com.floreysoft</groupId>
   <artifactId>jmte</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.1.soonr</version>
   <name>Java Minimal Template Engine</name>
   <description>
    To build and locally install jar, javadoc and sources, please use:
@@ -144,14 +144,17 @@
 	  </profile>
    </profiles>
 
-  <distributionManagement>
-    <repository>
-      <id>HubSpot-Releases</id>
-      <url>http://maven.hubteam.com/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>HubSpot-Snapshots</id>
-      <url>http://maven.hubteam.com/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>soonr</id>
+            <name>soonr-releases</name>
+            <url>http://192.168.1.11:8081/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>soonr</id>
+            <name>soonr-snapshots</name>
+            <url>http://192.168.1.11:8081/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
